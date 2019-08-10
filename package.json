@@ -1,0 +1,70 @@
+{
+  "author": "Richard Huang <rickypc@users.noreply.github.com>",
+  "dependencies": {
+    "debug": "^4.1.1",
+    "generic-pool": "^3.7.1"
+  },
+  "description": "A Page resource pool for Puppeteer.",
+  "devDependencies": {
+    "eslint": "^6.1.0",
+    "eslint-config-airbnb-base": "^13.2.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jest": "^22.14.0",
+    "jest": "^24.8.0",
+    "jsdoc-to-markdown": "^5.0.0",
+    "puppeteer": "next"
+  },
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "homepage": "https://github.com/rickypc/puppeteer-page-pool#readme",
+  "jest": {
+    "clearMocks": true,
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "index.js"
+    ],
+    "coverageDirectory": "./coverage/",
+    "errorOnDeprecated": true,
+    "logHeapUsage": true,
+    "testEnvironment": "node"
+  },
+  "keywords": [
+    "puppeteer",
+    "page",
+    "resource",
+    "pool",
+    "parallel",
+    "reuse",
+    "concurrency",
+    "model",
+    "worker",
+    "instance",
+    "limitation",
+    "construction",
+    "throttle",
+    "spawn",
+    "crawl",
+    "chrome",
+    "browser",
+    "functionality",
+    "headless"
+  ],
+  "license": "AGPL-3.0",
+  "main": "index.js",
+  "name": "puppeteer-page-pool",
+  "peerDependencies": {
+    "puppeteer": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:rickypc/puppeteer-page-pool.git"
+  },
+  "runkitExampleFilename": "example.js",
+  "scripts": {
+    "docs": "jsdoc2md -t .readme.hbs index.js > README.md",
+    "lint": "eslint __tests__/** index.js; exit 0",
+    "test": "jest"
+  },
+  "version": "1.0.0"
+}
