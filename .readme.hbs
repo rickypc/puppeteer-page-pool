@@ -5,6 +5,8 @@
 [![Code Style](https://img.shields.io/badge/code%20style-Airbnb-red.svg)](https://bit.ly/2JYN1gk)
 [![Build](https://img.shields.io/travis/rickypc/puppeteer-page-pool.svg)](https://bit.ly/2YSR7il)
 [![Coverage](https://img.shields.io/codecov/c/github/rickypc/puppeteer-page-pool.svg)](https://bit.ly/2TmdMhN)
+[![Vulnerability](https://img.shields.io/snyk/vulnerabilities/github/rickypc/puppeteer-page-pool.svg)](https://bit.ly/2YLUoRq)
+[![Dependabot](https://api.dependabot.com/badges/status?host=github&repo=rickypc/puppeteer-page-pool)](https://bit.ly/2KIM5vs)
 [![License](https://img.shields.io/npm/l/puppeteer-page-pool.svg)](https://bit.ly/2yi7gyO)
 
 Puppeteer Page Pool
