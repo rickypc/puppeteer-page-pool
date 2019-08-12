@@ -25,44 +25,47 @@ const createMocks = ({
   poolOnAction = '',
   poolUseAction = '',
 } = {}) => {
-  const mocks = Object.assign({
-    browserAction,
-    createPoolAction,
-    pageClosed,
-    poolOnAction,
-    poolUseAction,
-  }, {
-    browser: {
-      close: jest.fn(() => {}),
-      newPage: jest.fn(() => (mocks.browserAction === 'error'
-        ? Promise.reject(Error('error')) : Promise.resolve(mocks.page))),
+  const mocks = {
+    ...{
+      browserAction,
+      createPoolAction,
+      pageClosed,
+      poolOnAction,
+      poolUseAction,
     },
-    createPool: jest.spyOn(PagePool.__test__, 'createPool')
-      .mockImplementation(() => (mocks.createPoolAction === 'error' ? null : mocks.pool)),
-    debug: jest.spyOn(PagePool.__test__, 'debug').mockImplementation(() => {}),
-    defaultPuppeteer: {
-      launch: jest.spyOn(PagePool.__test__.defaultPuppeteer, 'launch')
-        .mockImplementation(() => mocks.browser),
+    ...{
+      browser: {
+        close: jest.fn(() => {}),
+        newPage: jest.fn(() => (mocks.browserAction === 'error'
+          ? Promise.reject(Error('error')) : Promise.resolve(mocks.page))),
+      },
+      createPool: jest.spyOn(PagePool.__test__, 'createPool')
+        .mockImplementation(() => (mocks.createPoolAction === 'error' ? null : mocks.pool)),
+      debug: jest.spyOn(PagePool.__test__, 'debug').mockImplementation(() => {}),
+      defaultPuppeteer: {
+        launch: jest.spyOn(PagePool.__test__.defaultPuppeteer, 'launch')
+          .mockImplementation(() => mocks.browser),
+      },
+      page: {
+        isClosed: jest.fn(() => mocks.pageClosed),
+        close: jest.fn(() => {}),
+      },
+      pool: {
+        clear: jest.fn(() => {}),
+        drain: jest.fn(() => {}),
+        on: jest.fn((topic, callback) => {
+          if (mocks.poolOnAction === 'error') {
+            callback(Error('error'));
+          }
+        }),
+        use: jest.fn((callback, ...args) => {
+          callback(mocks.page, ...args, mocks.pool);
+          return mocks.poolUseAction === 'error'
+            ? Promise.reject(Error('error')) : Promise.resolve();
+        }),
+      },
     },
-    page: {
-      isClosed: jest.fn(() => mocks.pageClosed),
-      close: jest.fn(() => {}),
-    },
-    pool: {
-      clear: jest.fn(() => {}),
-      drain: jest.fn(() => {}),
-      on: jest.fn((topic, callback) => {
-        if (mocks.poolOnAction === 'error') {
-          callback(Error('error'));
-        }
-      }),
-      use: jest.fn((callback, ...args) => {
-        callback(mocks.page, ...args, mocks.pool);
-        return mocks.poolUseAction === 'error'
-          ? Promise.reject(Error('error')) : Promise.resolve();
-      }),
-    },
-  });
+  };
   return mocks;
 };
 
