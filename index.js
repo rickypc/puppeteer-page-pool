@@ -47,7 +47,7 @@ const Helpers = {
   poolFactory: {
     async create () {
       const { onPageCreated = null } = this.options;
-      const page = await this.browser.newPage().catch(ex => Helpers.debug('create page error: %s', ex));
+      const page = await this.browser.newPage().catch((ex) => Helpers.debug('create page error: %s', ex));
       if (page) {
         Helpers.debug('page is created');
         if (typeof (onPageCreated) === 'function') {
@@ -297,8 +297,8 @@ class PagePool {
 
     if (this.pool) {
       Helpers.debug('pool is created');
-      this.pool.on('factoryCreateError', ex => Helpers.debug('pool.factoryCreate error: %s', ex));
-      this.pool.on('factoryDestroyError', ex => Helpers.debug('pool.factoryDestroy error: %s', ex));
+      this.pool.on('factoryCreateError', (ex) => Helpers.debug('pool.factoryCreate error: %s', ex));
+      this.pool.on('factoryDestroyError', (ex) => Helpers.debug('pool.factoryDestroy error: %s', ex));
     } else {
       Helpers.debug('pool is not created');
     }
@@ -334,8 +334,8 @@ class PagePool {
     } else if (typeof (handler) !== 'function') {
       Helpers.debug('handler is not a function');
     } else {
-      await this.pool.use(page => handler(page, ...args, this.pool))
-        .catch(ex => Helpers.debug('process error: %s', ex));
+      await this.pool.use((page) => handler(page, ...args, this.pool))
+        .catch((ex) => Helpers.debug('process error: %s', ex));
     }
   }
 }
