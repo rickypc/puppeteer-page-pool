@@ -46,10 +46,8 @@ const createMocks = ({
       debug: jest.spyOn(PagePool.__test__, 'debug').mockImplementation(() => {}),
       defaultPuppeteer: {
         launch: jest.spyOn(PagePool.__test__.defaultPuppeteer, 'launch')
-          .mockImplementation(() => {
-            return mocks.launchAction === 'error'
-              ? Promise.reject(Error('error')) : Promise.resolve(mocks.browser);
-          }),
+          .mockImplementation(() => (mocks.launchAction === 'error'
+            ? Promise.reject(Error('error')) : Promise.resolve(mocks.browser))),
       },
       page: {
         isClosed: jest.fn(() => mocks.pageClosed),
