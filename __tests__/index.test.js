@@ -21,6 +21,7 @@ const PagePool = require('../index.js');
 const createMocks = ({
   browserAction = '',
   createPoolAction = '',
+  launchAction = '',
   pageClosed = false,
   poolOnAction = '',
   poolUseAction = '',
@@ -29,6 +30,7 @@ const createMocks = ({
     ...{
       browserAction,
       createPoolAction,
+      launchAction,
       pageClosed,
       poolOnAction,
       poolUseAction,
@@ -44,7 +46,10 @@ const createMocks = ({
       debug: jest.spyOn(PagePool.__test__, 'debug').mockImplementation(() => {}),
       defaultPuppeteer: {
         launch: jest.spyOn(PagePool.__test__.defaultPuppeteer, 'launch')
-          .mockImplementation(() => mocks.browser),
+          .mockImplementation(() => {
+            return mocks.launchAction === 'error'
+              ? Promise.reject(Error('error')) : Promise.resolve(mocks.browser);
+          }),
       },
       page: {
         isClosed: jest.fn(() => mocks.pageClosed),
@@ -97,8 +102,9 @@ describe('PoolFactory helper test', () => {
       const actual = await PagePool.__test__.poolFactory.create.call(context);
       expect(actual).toEqual(mocks.page);
       expect(mocks.browser.newPage).toHaveBeenCalledTimes(1);
-      expect(mocks.debug).toHaveBeenCalledTimes(1);
+      expect(mocks.debug).toHaveBeenCalledTimes(2);
       expect(mocks.debug).toHaveBeenNthCalledWith(1, 'page is created');
+      expect(mocks.debug).toHaveBeenNthCalledWith(2, 'onPageCreated done');
     });
 
     it('should log error on failed to create new page', async () => {
@@ -150,7 +156,7 @@ describe('PoolFactory helper test', () => {
       const mocks = createMocks();
       const context = {
         options: {
-          onBeforePageDestroy (page) {
+          onPageDestroy (page) {
             expect(page).toEqual(mocks.page);
             expect(this).toEqual(context);
           },
@@ -159,8 +165,9 @@ describe('PoolFactory helper test', () => {
       await PagePool.__test__.poolFactory.destroy.call(context, mocks.page);
       expect(mocks.page.isClosed).toHaveBeenCalledTimes(1);
       expect(mocks.page.close).toHaveBeenCalledTimes(1);
-      expect(mocks.debug).toHaveBeenCalledTimes(1);
-      expect(mocks.debug).toHaveBeenNthCalledWith(1, 'page is destroyed');
+      expect(mocks.debug).toHaveBeenCalledTimes(2);
+      expect(mocks.debug).toHaveBeenNthCalledWith(1, 'onPageDestroy done');
+      expect(mocks.debug).toHaveBeenNthCalledWith(2, 'page is destroyed');
     });
 
     it('should ignore without page resource', async () => {
@@ -188,7 +195,7 @@ describe('PoolFactory helper test', () => {
       const mocks = createMocks();
       const context = {
         options: {
-          onBeforePageDestroy (page) {
+          onPageDestroy (page) {
             expect(page).toEqual(mocks.page);
             expect(this).toEqual(context);
             throw Error('error');
@@ -199,7 +206,7 @@ describe('PoolFactory helper test', () => {
       expect(mocks.page.isClosed).toHaveBeenCalledTimes(1);
       expect(mocks.page.close).toHaveBeenCalledTimes(1);
       expect(mocks.debug).toHaveBeenCalledTimes(2);
-      expect(mocks.debug).toHaveBeenNthCalledWith(1, 'onBeforePageDestroy error: %s',
+      expect(mocks.debug).toHaveBeenNthCalledWith(1, 'onPageDestroy error: %s',
         expect.any(Error));
       expect(mocks.debug).toHaveBeenNthCalledWith(2, 'page is destroyed');
     });
@@ -228,7 +235,8 @@ describe('PoolFactory helper test', () => {
       };
       const actual = await PagePool.__test__.poolFactory.validate.call(context, mocks.page);
       expect(actual).toBeTruthy();
-      expect(mocks.debug).not.toHaveBeenCalled();
+      expect(mocks.debug).toHaveBeenCalledTimes(1);
+      expect(mocks.debug).toHaveBeenNthCalledWith(1, 'onValidate done: %s', true);
     });
 
     it('should validate without page resource', async () => {
@@ -358,8 +366,10 @@ describe('PagePool module test', () => {
         validate: expect.any(Function),
       }), {});
       expect(mocks.debug).toHaveBeenCalledTimes(4);
-      expect(mocks.debug).toHaveBeenNthCalledWith(1, 'browser is created');
-      expect(mocks.debug).toHaveBeenNthCalledWith(2, 'pool is created');
+      expect(mocks.debug).toHaveBeenNthCalledWith(1, 'browser is created with: %j', expect.objectContaining({
+        args: expect.any(Array),
+      }));
+      expect(mocks.debug).toHaveBeenNthCalledWith(2, 'pool is created with: %j', expect.any(Object));
       expect(mocks.debug).toHaveBeenNthCalledWith(3, 'pool is closed');
       expect(mocks.debug).toHaveBeenNthCalledWith(4, 'browser is closed');
       expect(mocks.defaultPuppeteer.launch).toHaveBeenCalledTimes(1);
@@ -391,8 +401,10 @@ describe('PagePool module test', () => {
         validate: expect.any(Function),
       }), {});
       expect(mocks.debug).toHaveBeenCalledTimes(2);
-      expect(mocks.debug).toHaveBeenNthCalledWith(1, 'browser is created');
-      expect(mocks.debug).toHaveBeenNthCalledWith(2, 'pool is created');
+      expect(mocks.debug).toHaveBeenNthCalledWith(1, 'browser is created with: %j', expect.objectContaining({
+        args: expect.any(Array),
+      }));
+      expect(mocks.debug).toHaveBeenNthCalledWith(2, 'pool is created with: %j', expect.any(Object));
       expect(mocks.defaultPuppeteer.launch).toHaveBeenCalledTimes(1);
       expect(mocks.defaultPuppeteer.launch).toHaveBeenNthCalledWith(1, expect.objectContaining({
         args: expect.any(Array),
@@ -409,6 +421,28 @@ describe('PagePool module test', () => {
       expect(mocks.pool.use).not.toHaveBeenCalled();
     });
 
+    it('should log error on failed to launch the browser', async () => {
+      const mocks = createMocks({ launchAction: 'error' });
+      const actual = new PagePool();
+      await actual.launch();
+      expect(mocks.createPool).not.toHaveBeenCalled();
+      expect(mocks.debug).toHaveBeenCalledTimes(2);
+      expect(mocks.debug).toHaveBeenNthCalledWith(1, 'browser create error: %s', expect.any(Error));
+      expect(mocks.debug).toHaveBeenNthCalledWith(2, 'pool is not created');
+      expect(mocks.defaultPuppeteer.launch).toHaveBeenCalledTimes(1);
+      expect(mocks.defaultPuppeteer.launch).toHaveBeenNthCalledWith(1, expect.objectContaining({
+        args: expect.any(Array),
+      }));
+      expect(mocks.browser.close).not.toHaveBeenCalled();
+      expect(mocks.browser.newPage).not.toHaveBeenCalled();
+      expect(mocks.page.isClosed).not.toHaveBeenCalled();
+      expect(mocks.page.close).not.toHaveBeenCalled();
+      expect(mocks.pool.clear).not.toHaveBeenCalled();
+      expect(mocks.pool.drain).not.toHaveBeenCalled();
+      expect(mocks.pool.on).not.toHaveBeenCalled();
+      expect(mocks.pool.use).not.toHaveBeenCalled();
+    });
+
     it('should log error on failed to create pool', async () => {
       const mocks = createMocks({ createPoolAction: 'error' });
       const actual = new PagePool();
@@ -420,7 +454,9 @@ describe('PagePool module test', () => {
         validate: expect.any(Function),
       }), {});
       expect(mocks.debug).toHaveBeenCalledTimes(2);
-      expect(mocks.debug).toHaveBeenNthCalledWith(1, 'browser is created');
+      expect(mocks.debug).toHaveBeenNthCalledWith(1, 'browser is created with: %j', expect.objectContaining({
+        args: expect.any(Array),
+      }));
       expect(mocks.debug).toHaveBeenNthCalledWith(2, 'pool is not created');
       expect(mocks.defaultPuppeteer.launch).toHaveBeenCalledTimes(1);
       expect(mocks.defaultPuppeteer.launch).toHaveBeenNthCalledWith(1, expect.objectContaining({
@@ -447,8 +483,10 @@ describe('PagePool module test', () => {
         validate: expect.any(Function),
       }), {});
       expect(mocks.debug).toHaveBeenCalledTimes(4);
-      expect(mocks.debug).toHaveBeenNthCalledWith(1, 'browser is created');
-      expect(mocks.debug).toHaveBeenNthCalledWith(2, 'pool is created');
+      expect(mocks.debug).toHaveBeenNthCalledWith(1, 'browser is created with: %j', expect.objectContaining({
+        args: expect.any(Array),
+      }));
+      expect(mocks.debug).toHaveBeenNthCalledWith(2, 'pool is created with: %j', expect.any(Object));
       expect(mocks.debug).toHaveBeenNthCalledWith(3, 'pool.factoryCreate error: %s',
         expect.any(Error));
       expect(mocks.debug).toHaveBeenNthCalledWith(4, 'pool.factoryDestroy error: %s',
@@ -484,8 +522,10 @@ describe('PagePool module test', () => {
         validate: expect.any(Function),
       }), {});
       expect(mocks.debug).toHaveBeenCalledTimes(2);
-      expect(mocks.debug).toHaveBeenNthCalledWith(1, 'browser is created');
-      expect(mocks.debug).toHaveBeenNthCalledWith(2, 'pool is created');
+      expect(mocks.debug).toHaveBeenNthCalledWith(1, 'browser is created with: %j', expect.objectContaining({
+        args: expect.any(Array),
+      }));
+      expect(mocks.debug).toHaveBeenNthCalledWith(2, 'pool is created with: %j', expect.any(Object));
       expect(mocks.defaultPuppeteer.launch).toHaveBeenCalledTimes(1);
       expect(mocks.defaultPuppeteer.launch).toHaveBeenNthCalledWith(1, expect.objectContaining({
         args: expect.any(Array),
@@ -519,8 +559,10 @@ describe('PagePool module test', () => {
         validate: expect.any(Function),
       }), {});
       expect(mocks.debug).toHaveBeenCalledTimes(3);
-      expect(mocks.debug).toHaveBeenNthCalledWith(1, 'browser is created');
-      expect(mocks.debug).toHaveBeenNthCalledWith(2, 'pool is created');
+      expect(mocks.debug).toHaveBeenNthCalledWith(1, 'browser is created with: %j', expect.objectContaining({
+        args: expect.any(Array),
+      }));
+      expect(mocks.debug).toHaveBeenNthCalledWith(2, 'pool is created with: %j', expect.any(Object));
       expect(mocks.debug).toHaveBeenNthCalledWith(3, 'process error: %s', expect.any(Error));
       expect(mocks.defaultPuppeteer.launch).toHaveBeenCalledTimes(1);
       expect(mocks.defaultPuppeteer.launch).toHaveBeenNthCalledWith(1, expect.objectContaining({
@@ -573,8 +615,10 @@ describe('PagePool module test', () => {
         validate: expect.any(Function),
       }), {});
       expect(mocks.debug).toHaveBeenCalledTimes(3);
-      expect(mocks.debug).toHaveBeenNthCalledWith(1, 'browser is created');
-      expect(mocks.debug).toHaveBeenNthCalledWith(2, 'pool is created');
+      expect(mocks.debug).toHaveBeenNthCalledWith(1, 'browser is created with: %j', expect.objectContaining({
+        args: expect.any(Array),
+      }));
+      expect(mocks.debug).toHaveBeenNthCalledWith(2, 'pool is created with: %j', expect.any(Object));
       expect(mocks.debug).toHaveBeenNthCalledWith(3, 'handler is not a function');
       expect(mocks.defaultPuppeteer.launch).toHaveBeenCalledTimes(1);
       expect(mocks.defaultPuppeteer.launch).toHaveBeenNthCalledWith(1, expect.objectContaining({
