@@ -94,7 +94,7 @@ const optionsPagePool = new MyPagePool({
   async onPageCreated (page) {
     // Bound function that will be called after page is created.
   },
-  async onBeforePageDestroy (page) {
+  async onPageDestroy (page) {
     // Bound function that will be called right before page is destroyed.
   },
   async onValidate (page) {
@@ -223,7 +223,7 @@ PagePool instantiation options.
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
-| [onBeforePageDestroy] | <code>PoolEventHandler</code> | <code></code> | The function that would be called   before page is destroyed. |
+| [onPageDestroy] | <code>PoolEventHandler</code> | <code></code> | The function that would be called   before page is destroyed. |
 | [onPageCreated] | <code>PoolEventHandler</code> | <code></code> | The function that would be called   after page created. |
 | [onValidate] | <code>PoolEventHandler</code> | <code></code> | The function that would be called   to validate page resource validity. |
 | [poolOptions] | <code>Object</code> | <code>{}</code> | The pool instantiation options. See https://bit.ly/2GXZbUR |
@@ -233,7 +233,7 @@ PagePool instantiation options.
 **Example**  
 ```js
 const options = {
-  async onBeforePageDestroy (page) {},
+  async onPageDestroy (page) {},
   async onPageCreated(page) {},
   async onValidate(page) {},
   poolOptions: {},
