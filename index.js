@@ -47,12 +47,14 @@ const Helpers = {
   poolFactory: {
     async create () {
       const { onPageCreated = null } = this.options;
-      const page = await this.browser.newPage().catch((ex) => Helpers.debug('create page error: %s', ex));
+      const page = await this.browser.newPage()
+        .catch((ex) => Helpers.debug('create page error: %s', ex));
       if (page) {
         Helpers.debug('page is created');
         if (typeof (onPageCreated) === 'function') {
           try {
             await onPageCreated.call(this, page);
+            Helpers.debug('onPageCreated done');
           } catch (ex) {
             Helpers.debug('onPageCreated error: %s', ex);
           }
@@ -61,13 +63,14 @@ const Helpers = {
       return page;
     },
     async destroy (page) {
-      const { onBeforePageDestroy = null } = this.options;
+      const { onPageDestroy = null } = this.options;
       if (page) {
-        if (typeof (onBeforePageDestroy) === 'function') {
+        if (typeof (onPageDestroy) === 'function') {
           try {
-            await onBeforePageDestroy.call(this, page);
+            await onPageDestroy.call(this, page);
+            Helpers.debug('onPageDestroy done');
           } catch (ex) {
-            Helpers.debug('onBeforePageDestroy error: %s', ex);
+            Helpers.debug('onPageDestroy error: %s', ex);
           }
         }
         if (!page.isClosed()) {
@@ -83,6 +86,7 @@ const Helpers = {
         if (typeof (onValidate) === 'function') {
           try {
             response = await onValidate.call(this, page);
+            Helpers.debug('onValidate done: %s', response);
           } catch (ex) {
             Helpers.debug('onValidate error: %s', ex);
           }
@@ -163,7 +167,7 @@ const Helpers = {
  *   async onPageCreated (page) {
  *     // Bound function that will be called after page is created.
  *   },
- *   async onBeforePageDestroy (page) {
+ *   async onPageDestroy (page) {
  *     // Bound function that will be called right before page is destroyed.
  *   },
  *   async onValidate (page) {
@@ -205,7 +209,7 @@ class PagePool {
    * PagePool instantiation options.
    *
    * @typedef {Object} module:puppeteer-page-pool~Options
-   * @param {PoolEventHandler} [onBeforePageDestroy=null] - The function that would be called
+   * @param {PoolEventHandler} [onPageDestroy=null] - The function that would be called
    *   before page is destroyed.
    * @param {PoolEventHandler} [onPageCreated=null] - The function that would be called
    *   after page created.
@@ -220,7 +224,7 @@ class PagePool {
    *
    * @example
    * const options = {
-   *   async onBeforePageDestroy (page) {},
+   *   async onPageDestroy (page) {},
    *   async onPageCreated(page) {},
    *   async onValidate(page) {},
    *   poolOptions: {},
@@ -286,19 +290,24 @@ class PagePool {
       puppeteerOptions = {},
     } = this.options;
     puppeteerOptions.args = puppeteerOptions.args || Helpers.defaultPuppeteerArgs;
-    this.browser = await puppeteer.launch(puppeteerOptions);
-    Helpers.debug('browser is created');
+    this.browser = await puppeteer.launch(puppeteerOptions)
+      .catch((ex) => Helpers.debug('browser create error: %s', ex));
 
-    this.pool = Helpers.createPool({
-      create: Helpers.poolFactory.create.bind(this),
-      destroy: Helpers.poolFactory.destroy.bind(this),
-      validate: Helpers.poolFactory.validate.bind(this),
-    }, poolOptions);
+    if (this.browser) {
+      Helpers.debug('browser is created with: %j', puppeteerOptions);
+      this.pool = Helpers.createPool({
+        create: Helpers.poolFactory.create.bind(this),
+        destroy: Helpers.poolFactory.destroy.bind(this),
+        validate: Helpers.poolFactory.validate.bind(this),
+      }, poolOptions);
+    }
 
     if (this.pool) {
-      Helpers.debug('pool is created');
-      this.pool.on('factoryCreateError', (ex) => Helpers.debug('pool.factoryCreate error: %s', ex));
-      this.pool.on('factoryDestroyError', (ex) => Helpers.debug('pool.factoryDestroy error: %s', ex));
+      Helpers.debug('pool is created with: %j', poolOptions);
+      this.pool.on('factoryCreateError',
+        (ex) => Helpers.debug('pool.factoryCreate error: %s', ex));
+      this.pool.on('factoryDestroyError',
+        (ex) => Helpers.debug('pool.factoryDestroy error: %s', ex));
     } else {
       Helpers.debug('pool is not created');
     }
