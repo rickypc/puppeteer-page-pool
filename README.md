@@ -114,6 +114,46 @@ const optionsPagePool = new MyPagePool({
 // Custom action.
 await optionsPagePool.takeOff();
 ```
+**Example**  
+```js
+// parallel processes.
+const parallelPagePool = new PagePool({
+  // See opts section of https://bit.ly/2GXZbUR
+  poolOptions: {
+    max: 3,
+  },
+  puppeteer,
+  // See https://bit.ly/2M6kVCd
+  puppeteerOptions: {
+    headless: false,
+  },
+});
+// Launch the browser and proceed with pool creation.
+await parallelPagePool.launch();
+
+const promises = [
+  'https://angular.io',
+  'https://www.chromium.org',
+  'https://santatracker.google.com',
+].map((url) => {
+  // Acquire and release the page seamlessly.
+  return parallelPagePool.process(async (page, data) => {
+    // Navigate to given Url and wait until Angular is ready
+    // if it's an angular page.
+    await page.navigateUntilReady(data.url);
+    await page.screenshot({
+      fullPage: true,
+      path: `${data.url.replace(/https?:|\//g, '')}-screenshot.png`,
+    });
+  }, { url });
+});
+
+// Wait until it's all done.
+await Promise.all(promises);
+
+// All done.
+await parallelPagePool.destroy();
+```
 
 * [puppeteer-page-pool](#module_puppeteer-page-pool)
     * [PagePool](#exp_module_puppeteer-page-pool--PagePool) ⏏
