@@ -25,20 +25,23 @@ const Helpers = {
   debug: Debug('ppp:index'),
   defaultPuppeteer,
   defaultPuppeteerArgs: [
-    '--disable-breakpad',
     '--disable-crash-reporter',
     '--disable-dev-profile',
-    '--disable-dev-shm-usage',
+    '--disable-gpu',
     '--disable-notifications',
     '--disable-offer-store-unmasked-wallet-cards',
     '--disable-offer-upload-credit-cards',
+    '--disable-password-generation',
     '--disable-setuid-sandbox',
+    '--disable-speech-api',
+    '--disable-suggestions-ui',
     '--disable-web-security',
     '--enable-async-dns',
-    '--enable-simple-cache-backend',
     '--enable-tcp-fast-open',
-    '--media-cache-size=33554432',
+    // Hide scrollbars from screenshots.
+    '--hide-scrollbars',
     '--no-default-browser-check',
+    '--no-experiments',
     '--no-pings',
     '--no-sandbox',
     '--no-zygote',
@@ -186,6 +189,45 @@ const Helpers = {
  * });
  * // Custom action.
  * await optionsPagePool.takeOff();
+ *
+ * @example
+ * // parallel processes.
+ * const parallelPagePool = new PagePool({
+ *   // See opts section of https://bit.ly/2GXZbUR
+ *   poolOptions: {
+ *     max: 3,
+ *   },
+ *   puppeteer,
+ *   // See https://bit.ly/2M6kVCd
+ *   puppeteerOptions: {
+ *     headless: false,
+ *   },
+ * });
+ * // Launch the browser and proceed with pool creation.
+ * await parallelPagePool.launch();
+ *
+ * const promises = [
+ *   'https://angular.io',
+ *   'https://www.chromium.org',
+ *   'https://santatracker.google.com',
+ * ].map((url) => {
+ *   // Acquire and release the page seamlessly.
+ *   return parallelPagePool.process(async (page, data) => {
+ *     // Navigate to given Url and wait until Angular is ready
+ *     // if it's an angular page.
+ *     await page.navigateUntilReady(data.url);
+ *     await page.screenshot({
+ *       fullPage: true,
+ *       path: `${data.url.replace(/https?:|\//g, '')}-screenshot.png`,
+ *     });
+ *   }, { url });
+ * });
+ *
+ * // Wait until it's all done.
+ * await Promise.all(promises);
+ *
+ * // All done.
+ * await parallelPagePool.destroy();
  */
 
 /**
