@@ -1,13 +1,13 @@
-[![Version](https://img.shields.io/npm/v/puppeteer-page-pool.svg)](https://bit.ly/2KHg9rB)
-[![Downloads](https://img.shields.io/npm/dt/puppeteer-page-pool.svg)](https://bit.ly/2KHg9rB)
-[![Dependency Status](https://img.shields.io/david/rickypc/puppeteer-page-pool.svg)](https://bit.ly/2Tjx5YT)
-[![Dev Dependency Status](https://img.shields.io/david/dev/rickypc/puppeteer-page-pool.svg)](https://bit.ly/2YBkjev)
-[![Code Style](https://img.shields.io/badge/code%20style-Airbnb-red.svg)](https://bit.ly/2JYN1gk)
-[![Build](https://img.shields.io/travis/rickypc/puppeteer-page-pool.svg)](https://bit.ly/2YSR7il)
-[![Coverage](https://img.shields.io/codecov/c/github/rickypc/puppeteer-page-pool.svg)](https://bit.ly/2TmdMhN)
-[![Vulnerability](https://img.shields.io/snyk/vulnerabilities/github/rickypc/puppeteer-page-pool.svg)](https://bit.ly/2YLUoRq)
+[![Version](https://img.shields.io/npm/v/puppeteer-page-pool)](https://bit.ly/2KHg9rB)
+[![Downloads](https://img.shields.io/npm/dt/puppeteer-page-pool)](https://bit.ly/2KHg9rB)
+[![Dependency Status](https://img.shields.io/david/rickypc/puppeteer-page-pool)](https://bit.ly/2Tjx5YT)
+[![Dev Dependency Status](https://img.shields.io/david/dev/rickypc/puppeteer-page-pool)](https://bit.ly/2YBkjev)
+[![Code Style](https://img.shields.io/badge/code%20style-Airbnb-red)](https://bit.ly/2JYN1gk)
+[![Build](https://img.shields.io/travis/rickypc/puppeteer-page-pool)](https://bit.ly/2YSR7il)
+[![Coverage](https://img.shields.io/codecov/c/github/rickypc/puppeteer-page-pool)](https://bit.ly/2TmdMhN)
+[![Vulnerability](https://img.shields.io/snyk/vulnerabilities/github/rickypc/puppeteer-page-pool)](https://bit.ly/2YLUoRq)
 [![Dependabot](https://api.dependabot.com/badges/status?host=github&repo=rickypc/puppeteer-page-pool)](https://bit.ly/2KIM5vs)
-[![License](https://img.shields.io/npm/l/puppeteer-page-pool.svg)](https://bit.ly/2yi7gyO)
+[![License](https://img.shields.io/npm/l/puppeteer-page-pool)](https://bit.ly/2yi7gyO)
 
 Puppeteer Page Pool
 ===================
@@ -328,17 +328,21 @@ $ npm test
 
 Contributing
 -
-If you would like to contribute code to Puppeteer Page Pool project you can do so through GitHub by forking the repository and sending a pull request.
+If you would like to contribute code to Puppeteer Page Pool repository you can do so
+through GitHub by forking the repository and sending a pull request.
 
-When submitting code, please make every effort to follow existing conventions and style in order to keep the code as readable as possible. Please also include appropriate test cases.
+If you do not agree to [Contribution Agreement](CONTRIBUTING.md), do not
+contribute any code to Puppeteer Page Pool repository.
 
-Before your code can be accepted into the project you must also sign the [Puppeteer Page Pool CLA](https://bit.ly/2YOMKov) (Individual Contributor License Agreement).
+When submitting code, please make every effort to follow existing conventions
+and style in order to keep the code as readable as possible. Please also include
+appropriate test cases.
 
 That's it! Thank you for your contribution!
 
 License
 -
-Copyright (c) 2018 - 2019 Richard Huang.
+Copyright (c) 2018 - 2020 Richard Huang.
 
 This module is free software, licensed under: [GNU Affero General Public License (AGPL-3.0)](https://bit.ly/2yi7gyO).
 

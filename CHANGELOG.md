@@ -1,3 +1,7 @@
+### 1.2.2 (2020.03.07)
+
+* Update readme with new contributing section
+
 ### 1.2.1 (2019.08.15)
 
 * Update puppeteer arguments, example and documentation
