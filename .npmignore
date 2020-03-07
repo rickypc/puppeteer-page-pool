@@ -19,5 +19,6 @@
 .readme.hbs
 .travis.yml
 CHANGELOG.md
+CONTRIBUTING.md
 coverage
 __tests__
