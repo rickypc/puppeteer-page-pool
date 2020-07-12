@@ -21,4 +21,5 @@
 CHANGELOG.md
 CONTRIBUTING.md
 coverage
+Makefile
 __tests__
