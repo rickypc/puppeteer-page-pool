@@ -1,3 +1,8 @@
+### 1.2.4 (2021.02.21)
+
+* Update dependencies
+* Remove deprecated debug.destroy call
+
 ### 1.2.3 (2020.07.12)
 
 * Update dependencies
