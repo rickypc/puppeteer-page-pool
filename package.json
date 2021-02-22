@@ -4,18 +4,18 @@
     "name": "Richard Huang"
   },
   "dependencies": {
-    "debug": "^4.1.1",
+    "debug": "^4.3.1",
     "generic-pool": "^3.7.1"
   },
   "description": "A Page resource pool for Puppeteer.",
   "devDependencies": {
-    "eslint": "^7.4.0",
-    "eslint-config-airbnb-base": "^14.2.0",
-    "eslint-plugin-import": "^2.22.0",
-    "eslint-plugin-jest": "^23.18.0",
-    "jest": "^26.1.0",
+    "eslint": "^7.20.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jest": "^24.1.5",
+    "jest": "^26.6.3",
     "jsdoc-to-markdown": "^6.0.1",
-    "puppeteer": "^5.0.0"
+    "puppeteer": "^7.1.0"
   },
   "engines": {
     "node": ">=10.0.0"
@@ -69,5 +69,5 @@
     "lint": "eslint __tests__/** index.js; exit 0",
     "test": "jest"
   },
-  "version": "1.2.3"
+  "version": "1.2.4"
 }
