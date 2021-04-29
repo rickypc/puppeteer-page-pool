@@ -1,0 +1,22 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: weekly
+    time: "13:00"
+  open-pull-requests-limit: 10
+  reviewers:
+  - rickypc
+  ignore:
+  - dependency-name: jsdoc-to-markdown
+    versions:
+    - 7.0.0
+  - dependency-name: puppeteer
+    versions:
+    - 7.0.1
+    - 7.1.0
+    - 8.0.0
+  - dependency-name: eslint-plugin-jest
+    versions:
+    - 24.1.3
